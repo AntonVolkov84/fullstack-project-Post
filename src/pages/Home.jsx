@@ -2,15 +2,23 @@ import React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Grid from '@mui/material/Grid';
-
+import axios from '../axios';
 import { Post } from '../components/Post';
 import { TagsBlock } from '../components/TagsBlock';
 import { CommentsBlock } from '../components/CommentsBlock';
 
 export const Home = () => {
+  React.useEffect(() => {
+    axios.get('/posts');
+  }, []);
+
   return (
     <>
-      <Tabs style={{ marginBottom: 15 }} value={0} aria-label="basic tabs example">
+      <Tabs
+        style={{ marginBottom: 15 }}
+        value={0}
+        aria-label="basic tabs example"
+      >
         <Tab label="Новые" />
         <Tab label="Популярные" />
       </Tabs>
@@ -35,7 +43,10 @@ export const Home = () => {
           ))}
         </Grid>
         <Grid xs={4} item>
-          <TagsBlock items={['react', 'typescript', 'заметки']} isLoading={false} />
+          <TagsBlock
+            items={['react', 'typescript', 'заметки']}
+            isLoading={false}
+          />
           <CommentsBlock
             items={[
               {
