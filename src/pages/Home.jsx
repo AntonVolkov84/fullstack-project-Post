@@ -14,6 +14,7 @@ export const Home = () => {
   const dispatch = useDispatch();
 
   const isPostsLoading = posts.status === 'Loading';
+  const isTagsLoading = tags.status === 'Loading';
 
   React.useEffect(() => {
     dispatch(fetchPosts());
@@ -51,10 +52,7 @@ export const Home = () => {
           )}
         </Grid>
         <Grid xs={4} item>
-          <TagsBlock
-            items={['react', 'typescript', 'заметки']}
-            isLoading={false}
-          />
+          <TagsBlock items={tags.items} isLoading={isTagsLoading} />
           <CommentsBlock
             items={[
               {
