@@ -2,14 +2,17 @@ import React from 'react';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Grid from '@mui/material/Grid';
-import axios from '../axios';
+import { useDispatch } from 'react-redux';
 import { Post } from '../components/Post';
 import { TagsBlock } from '../components/TagsBlock';
 import { CommentsBlock } from '../components/CommentsBlock';
+import axios from 'axios';
+import { fetchPosts } from '../redux/slices/posts';
 
 export const Home = () => {
+  const dispatch = useDispatch();
   React.useEffect(() => {
-    axios.get('/posts');
+    dispatch(fetchPosts());
   }, []);
 
   return (
@@ -64,7 +67,7 @@ export const Home = () => {
                 text: 'When displaying three lines or more, the avatar is not aligned at the top. You should set the prop to align the avatar at the top',
               },
             ]}
-            isLoading={false}
+            isLoading={true}
           />
         </Grid>
       </Grid>
