@@ -4,13 +4,14 @@ import Paper from '@mui/material/Paper';
 import Button from '@mui/material/Button';
 import SimpleMDE from 'react-simplemde-editor';
 import axios from '../../axios';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate, useParams } from 'react-router-dom';
 import 'easymde/dist/easymde.min.css';
 import styles from './AddPost.module.scss';
 import { useSelector } from 'react-redux';
 import { selectIsAuth } from '../../redux/slices/auth';
 
 export const AddPost = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
   const isAuth = useSelector(selectIsAuth);
   const [isLoading, setLoading] = React.useState(false);
@@ -19,6 +20,7 @@ export const AddPost = () => {
   const [tags, setTags] = React.useState('');
   const [imageUrl, setImageUrl] = React.useState('');
   const inputFileRef = React.useRef(null);
+  const isEditing = Boolean(id);
 
   const handleChangeFile = async (event) => {
     try {
@@ -47,17 +49,30 @@ export const AddPost = () => {
       const fields = {
         title,
         imageUrl,
-        tags: tags.split(','),
+        tags,
         text,
       };
-      const { data } = await axios.post('/posts', fields);
-      const id = data._id;
-      navigate(`/posts/${id}`);
+      const { data } = isEditing
+        ? await axios.patch(`/posts/${id}`, fields)
+        : await axios.post('/posts', fields);
+      const _id = isEditing ? id : data._id;
+      navigate(`/posts/${_id}`);
     } catch (error) {
       console.log(error);
       alert('File did not download');
     }
   };
+
+  React.useEffect(() => {
+    if (id) {
+      axios.get(`/posts/${id}`).then(({ data }) => {
+        setTitle(data.title);
+        setTags(data.tags.join(','));
+        setText(data.text);
+        setImageUrl(data.imageUrl);
+      });
+    }
+  }, []);
 
   const options = React.useMemo(
     () => ({
@@ -134,7 +149,7 @@ export const AddPost = () => {
       />
       <div className={styles.buttons}>
         <Button onClick={onSubmit} size="large" variant="contained">
-          Опубликовать
+          {isEditing ? 'Редагувати' : 'Опубликовать'}
         </Button>
         <a href="/">
           <Button size="large">Отмена</Button>
